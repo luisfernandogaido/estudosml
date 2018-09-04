@@ -152,11 +152,11 @@ func (m ModeloPropaganda) CovVendas() Propaganda {
 		propaganda.Jornal += (m.dad[i].Jornal - m.Med.Jornal) * (m.dad[i].Vendas - m.Med.Vendas)
 		propaganda.Vendas += (m.dad[i].Vendas - m.Med.Vendas) * (m.dad[i].Vendas - m.Med.Vendas)
 	}
-	n := len(m.dad)
-	propaganda.Tv /= float64(n)
-	propaganda.Radio /= float64(n)
-	propaganda.Jornal /= float64(n)
-	propaganda.Vendas /= float64(n)
+	n := float64(len(m.dad))
+	propaganda.Tv /= n
+	propaganda.Radio /= n
+	propaganda.Jornal /= n
+	propaganda.Vendas /= n
 	return propaganda
 }
 
