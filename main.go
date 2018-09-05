@@ -13,6 +13,7 @@ func main() {
 		log.Fatal(err)
 	}
 	df.Roda()
-	tv := df.Series["radio"]
-	fmt.Println(tv.Maximo, tv.Minimo, tv.Media)
+	for _, s := range df.Series {
+		fmt.Println(s.Nome, s.Q1, s.Q2, s.Q3)
+	}
 }

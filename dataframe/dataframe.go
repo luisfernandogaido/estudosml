@@ -4,6 +4,7 @@ import (
 	"encoding/csv"
 	"math"
 	"os"
+	"sort"
 	"strconv"
 )
 
@@ -35,6 +36,7 @@ func (s *SerieFloat64) AdicionaValores(valores []float64) {
 }
 
 func (s *SerieFloat64) Roda() {
+	n := len(s.Valores)
 	soma := 0.0
 	s.Minimo = math.MaxFloat64
 	s.Maximo = -s.Minimo
@@ -44,6 +46,23 @@ func (s *SerieFloat64) Roda() {
 		s.Maximo = math.Max(v, s.Maximo)
 	}
 	s.Media = soma / float64(len(s.Valores))
+	s.DesvioPadrao = 0.0
+	sorteados := make([]float64, len(s.Valores))
+	copy(sorteados, s.Valores)
+	sort.Float64s(sorteados)
+	q1 := int(math.Round(0.25 * float64(n+1)))
+	s.Q1 = sorteados[q1-1]
+	if n%2 == 0 {
+		s.Q2 = (sorteados[int(n/2)-1] + sorteados[int(n/2)]) / 2
+	} else {
+		s.Q2 = sorteados[int((n+1)/2)-1]
+	}
+	q3 := int(math.Round(0.75 * float64(n+1)))
+	s.Q3 = sorteados[q3-1]
+	for _, v := range s.Valores {
+		s.DesvioPadrao += math.Pow(v-s.Media, 2)
+	}
+	s.DesvioPadrao = math.Pow(s.DesvioPadrao/(float64(len(s.Valores))-1), 0.5)
 }
 
 type DataFrameFloat64 struct {
