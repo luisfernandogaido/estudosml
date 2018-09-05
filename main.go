@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	df, err := dataframe.NewFloat64CSV("./data/Advertising.csv")
+	df, err := dataframe.NewDataFrameFloat64CSV("./data/Advertising.csv")
 	if err != nil {
 		log.Fatal(err)
 	}

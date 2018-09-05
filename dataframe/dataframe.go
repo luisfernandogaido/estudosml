@@ -20,10 +20,6 @@ type SerieFloat64 struct {
 	Q3           float64
 }
 
-func newSerieFloat64(n string, v []float64) SerieFloat64 {
-	return SerieFloat64{Nome: n, Valores: v}
-}
-
 func (s *SerieFloat64) AdicionaValor(valor float64) {
 	if s.Valores == nil {
 		s.Valores = make([]float64, 0)
@@ -54,14 +50,14 @@ type DataFrameFloat64 struct {
 	Series map[string]SerieFloat64
 }
 
-func NewFloat64() DataFrameFloat64 {
+func NewDataFrameFloat64() DataFrameFloat64 {
 	df := DataFrameFloat64{}
 	df.Series = make(map[string]SerieFloat64)
 	return df
 }
 
 func (d DataFrameFloat64) NewSerie(nome string, valores []float64) {
-	d.Series[nome] = newSerieFloat64(nome, valores)
+	d.Series[nome] = SerieFloat64{Nome: nome, Valores: valores}
 }
 
 func (d *DataFrameFloat64) Roda() {
@@ -72,7 +68,7 @@ func (d *DataFrameFloat64) Roda() {
 	}
 }
 
-func NewFloat64CSV(arq string) (DataFrameFloat64, error) {
+func NewDataFrameFloat64CSV(arq string) (DataFrameFloat64, error) {
 	f, err := os.Open(arq)
 	if err != nil {
 		return DataFrameFloat64{}, err
@@ -83,7 +79,7 @@ func NewFloat64CSV(arq string) (DataFrameFloat64, error) {
 	if err != nil {
 		return DataFrameFloat64{}, err
 	}
-	df := NewFloat64()
+	df := NewDataFrameFloat64()
 	titulos := recs[:1][0]
 	linhas := recs[1:]
 	for _, titulo := range titulos {
