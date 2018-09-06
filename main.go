@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/luisfernandogaido/estudosml/dataframe"
 	"log"
+
+	"github.com/luisfernandogaido/estudosml/dataframe"
 )
 
 func main() {
