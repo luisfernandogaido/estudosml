@@ -2,9 +2,8 @@ package main
 
 import (
 	"fmt"
-	"log"
-
 	"github.com/luisfernandogaido/estudosml/dataframe"
+	"log"
 )
 
 func main() {
@@ -12,8 +11,8 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	df.Roda()
-	for _, s := range df.Series {
-		fmt.Println(s.Nome, s.Q1, s.Q2, s.Q3)
-	}
+	dfs := df.Divide(4, 1)
+	training, test := dfs[0], dfs[1]
+	fmt.Println(training)
+	fmt.Println(test)
 }

@@ -87,6 +87,32 @@ func (d *DataFrameFloat64) Roda() {
 	}
 }
 
+func (d DataFrameFloat64) Divide(proporcoes ...float64) []DataFrameFloat64 {
+	dfs := make([]DataFrameFloat64, 0, len(proporcoes))
+	somaProporcoes := 0.0
+	var n int
+	for k := range d.Series {
+		serie := d.Series[k]
+		n = len(serie.Valores)
+		break
+	}
+	for _, p := range proporcoes {
+		somaProporcoes += p
+	}
+	p, q := 0, 0
+	for _, proporcao := range proporcoes {
+		q = p + int(math.Round(float64(n)*proporcao/somaProporcoes))
+		df := NewDataFrameFloat64()
+		for k := range d.Series {
+			serie := d.Series[k]
+			df.NewSerie(k, serie.Valores[p:q])
+		}
+		dfs = append(dfs, df)
+		p = q
+	}
+	return dfs
+}
+
 func NewDataFrameFloat64CSV(arq string) (DataFrameFloat64, error) {
 	f, err := os.Open(arq)
 	if err != nil {
