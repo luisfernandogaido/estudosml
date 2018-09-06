@@ -1,9 +1,8 @@
+//http://www.portalaction.com.br/analise-de-regressao/22-estimacao-dos-parametros-do-modelo
+//https://slideplayer.com.br/slide/348945/
 package main
 
-//http://www.portalaction.com.br/analise-de-regressao/22-estimacao-dos-parametros-do-modelo
-import (
-	"fmt"
-)
+import "fmt"
 
 type Matriz struct {
 	elementos [][]float64
