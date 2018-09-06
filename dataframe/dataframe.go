@@ -2,6 +2,7 @@ package dataframe
 
 import (
 	"encoding/csv"
+	"fmt"
 	"math"
 	"os"
 	"sort"
@@ -111,6 +112,60 @@ func (d DataFrameFloat64) Divide(proporcoes ...float64) []DataFrameFloat64 {
 		p = q
 	}
 	return dfs
+}
+
+func (d DataFrameFloat64) NewRegressaoLinear(x, y string) (RegressaoLinear, error) {
+	serieX, ok := d.Series[x]
+	if !ok {
+		return RegressaoLinear{}, fmt.Errorf("série %v não existe", x)
+	}
+	serieY, ok := d.Series[y]
+	if !ok {
+		return RegressaoLinear{}, fmt.Errorf("série %v não existe", y)
+	}
+	n := len(serieX.Valores)
+	if n != len(serieY.Valores) {
+		return RegressaoLinear{}, fmt.Errorf("séries x e y não possuem a mesma quantidade de elementos")
+	}
+	mediaX := 0.0
+	mediaY := 0.0
+	for i := 0; i < n; i++ {
+		mediaX += serieX.Valores[i]
+		mediaY += serieY.Valores[i]
+	}
+	mediaX /= float64(n)
+	mediaY /= float64(n)
+	numeradorB := 0.0
+	denominadorB := 0.0
+	for i := 0; i < n; i++ {
+		numeradorB += (serieX.Valores[i] - mediaX) * (serieY.Valores[i] - mediaY)
+		denominadorB += math.Pow(serieX.Valores[i]-mediaX, 2)
+	}
+	a := numeradorB / denominadorB
+	b := mediaY - a*mediaX
+	return RegressaoLinear{a, b}, nil
+}
+
+type RegressaoLinear struct {
+	A float64
+	B float64
+}
+
+func (r RegressaoLinear) Prediz(x float64) float64 {
+	return r.A*x + r.B
+}
+
+func (r RegressaoLinear) MAE(valores []float64, observados []float64) (float64, error) {
+	n := len(valores)
+	if n != len(observados) {
+		return 0, fmt.Errorf("número de elementos nos conjuntos de valores e observados diferem")
+	}
+	mae := 0.0
+	for i := 0; i < n; i++ {
+		mae += math.Abs(r.Prediz(valores[i]) - observados[i])
+	}
+	mae /= float64(n)
+	return mae, nil
 }
 
 func NewDataFrameFloat64CSV(arq string) (DataFrameFloat64, error) {
