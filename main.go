@@ -2,38 +2,26 @@
 //https://slideplayer.com.br/slide/348945/
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"log"
 
-type Matriz struct {
-	elementos [][]float64
-}
-
-func NewMatriz(v [][]float64) Matriz {
-	return Matriz{v}
-}
-
-func (m Matriz) Em(i, j int) float64 {
-	return m.elementos[i-1][j-1]
-}
-
-func (m Matriz) String() string {
-	var out string
-	for i := 0; i < len(m.elementos); i++ {
-		out += "|"
-		for j := 0; j < len(m.elementos[i]); j++ {
-			out += fmt.Sprintf("%6.2f", m.elementos[i][j]) + " "
-		}
-		out += "|\n"
-	}
-	return out
-}
+	"github.com/luisfernandogaido/estudosml/matriz"
+)
 
 func main() {
-	valores := [][]float64{
-		{1, 2, 3},
-		{4, 5, 6},
-		{7, 8, 9},
+	a := matriz.New([][]float64{
+		{2, 5, 9},
+		{3, 6, 8},
+	})
+	b := matriz.New([][]float64{
+		{2, 7},
+		{4, 3},
+		{5, 2},
+	})
+	c, err := a.Multiplica(b)
+	if err != nil {
+		log.Fatal(err)
 	}
-	matriz := NewMatriz(valores)
-	fmt.Println(matriz)
+	fmt.Println(c)
 }
