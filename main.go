@@ -1,5 +1,6 @@
 //http://www.portalaction.com.br/analise-de-regressao/22-estimacao-dos-parametros-do-modelo
 //https://slideplayer.com.br/slide/348945/
+//https://www.youtube.com/watch?v=MKWIRhKVjOY&t=381s
 package main
 
 import (
