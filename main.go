@@ -1,30 +1,34 @@
-//http://www.portalaction.com.br/analise-de-regressao/22-estimacao-dos-parametros-do-modelo
-//https://slideplayer.com.br/slide/348945/
-//https://www.youtube.com/watch?v=MKWIRhKVjOY&t=381s
 package main
 
 import (
 	"fmt"
 	"log"
+	"math/rand"
 	"time"
 
 	"github.com/luisfernandogaido/estudosml/matriz"
 )
 
 func main() {
+	rand.Seed(time.Now().UnixNano())
+	amplitude := 9
+	lado := 5
+	valores := make([][]float64, 0)
+	for i := 0; i < lado; i++ {
+		linha := make([]float64, 0)
+		for j := 0; j < lado; j++ {
+			n := rand.Intn(2*amplitude-1) - amplitude
+			linha = append(linha, float64(n))
+		}
+		valores = append(valores, linha)
+	}
+	ma := matriz.New(valores)
+	fmt.Println(ma)
 	t0 := time.Now()
-	m := matriz.New([][]float64{
-		{1, 2, 2, -1, 2, 1},
-		{3, 1, -2, 4, -2, 2},
-		{-5, 0, 7, 1, 8, 1},
-		{1, 2, 3, 4, -6, -3},
-		{2, 2, -1, 3, 5, 6},
-		{9, -7, 2, 1, 0, -3},
-	})
-	det, err := m.Det()
+	det, err := ma.Det()
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(det)
+	fmt.Printf("%.0f\n", det)
 	fmt.Println(time.Since(t0))
 }
