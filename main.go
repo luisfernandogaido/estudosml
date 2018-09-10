@@ -1,34 +1,27 @@
+//https://pt.wikipedia.org/wiki/M%C3%A9todo_dos_m%C3%ADnimos_quadrados
+//http://www.portalaction.com.br/analise-de-regressao/22-estimacao-dos-parametros-do-modelo
 package main
 
 import (
 	"fmt"
-	"log"
-	"math/rand"
-	"time"
 
 	"github.com/luisfernandogaido/estudosml/matriz"
 )
 
 func main() {
-	rand.Seed(time.Now().UnixNano())
-	amplitude := 9
-	lado := 5
-	valores := make([][]float64, 0)
-	for i := 0; i < lado; i++ {
-		linha := make([]float64, 0)
-		for j := 0; j < lado; j++ {
-			n := rand.Intn(2*amplitude-1) - amplitude
-			linha = append(linha, float64(n))
-		}
-		valores = append(valores, linha)
-	}
-	ma := matriz.New(valores)
-	fmt.Println(ma)
-	t0 := time.Now()
-	det, err := ma.Det()
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Printf("%.0f\n", det)
-	fmt.Println(time.Since(t0))
+	m := matriz.New([][]float64{
+		{1, 139, 0.115},
+		{1, 126, 0.12},
+		{1, 90, 0.105},
+		{1, 144, 0.09},
+		{1, 163, 0.1},
+		{1, 136, 0.12},
+		{1, 61, 0.105},
+		{1, 62, 0.08},
+		{1, 41, 10},
+		{1, 120, 0.115},
+	})
+	fmt.Println(m)
+	m.TrocaLinhas(0, 1)
+	fmt.Println(m)
 }

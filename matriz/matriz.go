@@ -118,3 +118,22 @@ func (m Matriz) Det() (float64, error) {
 	}
 	return d, nil
 }
+
+func (m Matriz) Transposta() (Matriz, error) {
+	elementos := make([][]float64, 0)
+	linhas, colunas := m.Dim()
+	for j := 0; j < colunas; j++ {
+		linha := make([]float64, 0)
+		for i := 0; i < linhas; i++ {
+			linha = append(linha, m.elementos[i][j])
+		}
+		elementos = append(elementos, linha)
+	}
+	return Matriz{elementos}, nil
+}
+
+func (m Matriz) TrocaLinhas(l1, l2 int) {
+	aux := m.elementos[l1]
+	m.elementos[l1] = m.elementos[l2]
+	m.elementos[l2] = aux
+}
