@@ -133,7 +133,25 @@ func (m Matriz) Transposta() (Matriz, error) {
 }
 
 func (m Matriz) TrocaLinhas(l1, l2 int) {
-	aux := m.elementos[l1]
-	m.elementos[l1] = m.elementos[l2]
-	m.elementos[l2] = aux
+	aux := m.elementos[l1-1]
+	m.elementos[l1-1] = m.elementos[l2-1]
+	m.elementos[l2-1] = aux
+}
+
+func (m Matriz) MultiplicaLinha(l int, c float64) {
+	_, colunas := m.Dim()
+	for j := 0; j < colunas; j++ {
+		m.elementos[l-1][j] *= c
+	}
+}
+
+func (m Matriz) SomaLinhas(l, l1, l2 int) {
+	_, colunas := m.Dim()
+	for j := 0; j < colunas; j++ {
+		m.elementos[l-1][j] = m.elementos[l1-1][j] + m.elementos[l2-1][j]
+	}
+}
+
+func (m Matriz) I() (Matriz, error) {
+	return Matriz{}, nil
 }
