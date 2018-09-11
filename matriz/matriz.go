@@ -14,6 +14,16 @@ func New(v [][]float64) Matriz {
 	return Matriz{v}
 }
 
+func (m Matriz) V() [][]float64 {
+	v := make([][]float64, 0)
+	for _, linha := range m.elementos {
+		copia := make([]float64, len(linha))
+		copy(copia, linha)
+		v = append(v, copia)
+	}
+	return v
+}
+
 func (m Matriz) Dim() (int, int) {
 	return len(m.elementos), len(m.elementos[0])
 }
@@ -152,6 +162,92 @@ func (m Matriz) SomaLinhas(l, l1, l2 int) {
 	}
 }
 
-func (m Matriz) I() (Matriz, error) {
-	return Matriz{}, nil
+func (m Matriz) Indentidade() (Matriz, error) {
+	M, N := m.Dim()
+	if M != N {
+		return Matriz{}, errors.New("matriz identidade não pode ser calculada por não ser quadrada")
+	}
+	linhas := make([][]float64, 0, M)
+	for i := 0; i < M; i++ {
+		linha := make([]float64, 0, N)
+		for j := 0; j < N; j++ {
+			valor := 0.0
+			if i == j {
+				valor = 1.0
+			}
+			linha = append(linha, valor)
+		}
+		linhas = append(linhas, linha)
+	}
+	return Matriz{linhas}, nil
+}
+
+//Calcula a matriz inversa.
+// Aprendi mesmo aqui: http://www.gregthatcher.com/Mathematics/GaussJordan.aspx
+// Outra excelente fonte é https://www.intmath.com/matrices-determinants/inverse-matrix-gauss-jordan-elimination.php
+func (m Matriz) Inversa() (Matriz, error) {
+	ide, err := m.Indentidade()
+	if err != nil {
+		return Matriz{}, err
+	}
+	e1 := m.V()
+	e2 := ide.elementos
+	dim, _ := m.Dim()
+	for i := 0; i < dim; i++ {
+		iMax := i
+		abs := 0.0
+		for k := i + 1; k < dim; k++ {
+			valor := math.Abs(e1[k][i])
+			if math.Abs(valor) > abs {
+				abs = valor
+				iMax = k
+			}
+		}
+		if iMax != i {
+			aux1 := e1[i]
+			e1[i] = e1[iMax]
+			e1[iMax] = aux1
+			aux2 := e2[i]
+			e2[i] = e2[iMax]
+			e2[iMax] = aux2
+		}
+		if e1[i][i] != 1 {
+			divisor := e1[i][i]
+			for j := 0; j < dim; j++ {
+				e1[i][j] /= divisor
+				e2[i][j] /= divisor
+			}
+		}
+		for k := i + 1; k < dim; k++ {
+			multiplicador := -(e1[k][i] / e1[i][i])
+			linhaZerada := true
+			for j := 0; j < dim; j++ {
+				e1[k][j] += multiplicador * e1[i][j]
+				e2[k][j] += multiplicador * e2[i][j]
+				if e1[k][j] != 0.0 {
+					linhaZerada = false
+				}
+			}
+			if linhaZerada {
+				return Matriz{}, errors.New("matriz não é inversível")
+			}
+		}
+	}
+	for i := dim - 1; i >= 0; i-- {
+		for k := i - 1; k >= 0; k-- {
+			multiplicador := -e1[k][i]
+			linhaZerada := true
+			for j := 0; j < dim; j++ {
+				e1[k][j] += multiplicador * e1[i][j]
+				e2[k][j] += multiplicador * e2[i][j]
+				if e1[k][j] != 0.0 {
+					linhaZerada = false
+				}
+			}
+			if linhaZerada {
+				return Matriz{}, errors.New("matriz não é inversível")
+			}
+		}
+	}
+	return ide, nil
 }
