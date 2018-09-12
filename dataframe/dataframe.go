@@ -8,6 +8,7 @@ import (
 	"os"
 	"sort"
 	"strconv"
+	"strings"
 
 	"github.com/luisfernandogaido/estudosml/matriz"
 )
@@ -259,6 +260,22 @@ func (r RegressaoMultipla) MAE(valores [][]float64, observados []float64) (float
 	}
 	mae /= float64(n)
 	return mae, nil
+}
+
+func (r RegressaoMultipla) Formula(precisao int) string {
+	if precisao < 0 {
+		precisao = 2
+	}
+	termos := make([]string, len(r))
+	termos[0] = "y = " + strconv.FormatFloat(r[0], 'f', precisao, 64)
+	for i := 1; i < len(r); i++ {
+		operacao := "+ "
+		if r[i] < 0 {
+			operacao = "- "
+		}
+		termos[i] = operacao + strconv.FormatFloat(math.Abs(r[i]), 'f', precisao, 64) + "*x" + strconv.Itoa(i)
+	}
+	return strings.Join(termos, " ")
 }
 
 func NewDataFrameFloat64CSV(arq string) (DataFrameFloat64, error) {
