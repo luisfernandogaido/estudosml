@@ -37,7 +37,7 @@ func (m Matriz) String() string {
 	for i := 0; i < len(m.elementos); i++ {
 		out += "|"
 		for j := 0; j < len(m.elementos[i]); j++ {
-			out += fmt.Sprintf("%5.2f", m.elementos[i][j]) + " "
+			out += fmt.Sprintf("%5.4f", m.elementos[i][j]) + " "
 		}
 		out += "|\n"
 	}
@@ -129,7 +129,7 @@ func (m Matriz) Det() (float64, error) {
 	return d, nil
 }
 
-func (m Matriz) Transposta() (Matriz, error) {
+func (m Matriz) Transposta() Matriz {
 	elementos := make([][]float64, 0)
 	linhas, colunas := m.Dim()
 	for j := 0; j < colunas; j++ {
@@ -139,7 +139,7 @@ func (m Matriz) Transposta() (Matriz, error) {
 		}
 		elementos = append(elementos, linha)
 	}
-	return Matriz{elementos}, nil
+	return Matriz{elementos}
 }
 
 func (m Matriz) TrocaLinhas(l1, l2 int) {

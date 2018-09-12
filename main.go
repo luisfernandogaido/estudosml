@@ -1,39 +1,20 @@
-//https://matrix.reshish.com/ptBr/gauss-jordanElimination.php
-//https://www.khanacademy.org/math/precalculus/precalc-matrices/elementary-matrix-row-operations/a/matrix-row-operations
-//https://pt.wikipedia.org/wiki/M%C3%A9todo_dos_m%C3%ADnimos_quadrados
-//http://www.portalaction.com.br/analise-de-regressao/22-estimacao-dos-parametros-do-modelo
 package main
 
 import (
 	"fmt"
 	"log"
-	"math/rand"
-	"time"
 
-	"github.com/luisfernandogaido/estudosml/matriz"
+	"github.com/luisfernandogaido/estudosml/dataframe"
 )
 
 func main() {
-	rand.Seed(time.Now().UnixNano())
-	valores := make([][]float64, 0)
-	lado := 4
-	for i := 0; i < lado; i++ {
-		linha := make([]float64, 0)
-		for j := 0; j < lado; j++ {
-			linha = append(linha, float64(rand.Intn(20))-10)
-		}
-		valores = append(valores, linha)
-	}
-	m := matriz.New(valores)
-	inversa, err := m.Inversa()
+	df := dataframe.NewDataFrameFloat64()
+	df.NewSerie("x1", []float64{-1, 1, -1, 1, 0, 0, 0, -1, 1, 0, 0, 0, 0, 0.1667})
+	df.NewSerie("x2", []float64{-1, -1, 0.6667, 0.6667, -0.4444, -0.7222, 0.6667, -0.1667, -0.1667, -1, 0.9444, -0.1667, 1, -0.1667})
+	df.NewSerie("y", []float64{1004, 1636, 852, 1506, 1272, 1270, 1269, 903, 1555, 1260, 1146, 1276, 1225, 1321})
+	rm, err := df.NewRegressaoMultipla([]string{"x1", "x2"}, "y")
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(m)
-	fmt.Println(inversa)
-	multiplicada, err := m.Multiplica(inversa)
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println(multiplicada)
+	fmt.Println(rm)
 }

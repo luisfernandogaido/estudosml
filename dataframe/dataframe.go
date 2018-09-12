@@ -2,11 +2,14 @@ package dataframe
 
 import (
 	"encoding/csv"
+	"errors"
 	"fmt"
 	"math"
 	"os"
 	"sort"
 	"strconv"
+
+	"github.com/luisfernandogaido/estudosml/matriz"
 )
 
 type SerieFloat64 struct {
@@ -114,6 +117,11 @@ func (d DataFrameFloat64) Divide(proporcoes ...float64) []DataFrameFloat64 {
 	return dfs
 }
 
+type RegressaoLinear struct {
+	A float64
+	B float64
+}
+
 func (d DataFrameFloat64) NewRegressaoLinear(x, y string) (RegressaoLinear, error) {
 	serieX, ok := d.Series[x]
 	if !ok {
@@ -146,9 +154,69 @@ func (d DataFrameFloat64) NewRegressaoLinear(x, y string) (RegressaoLinear, erro
 	return RegressaoLinear{a, b}, nil
 }
 
-type RegressaoLinear struct {
-	A float64
-	B float64
+type RegressaoMultipla []float64
+
+func (d DataFrameFloat64) NewRegressaoMultipla(x []string, y string) (RegressaoMultipla, error) {
+	var n int
+	for i, k := range x {
+		serie, ok := d.Series[k]
+		if !ok {
+			return nil, errors.New("regressão: rótulo de série não encontrado")
+		}
+		if i != 0 && len(serie.Valores) != n {
+			return nil, errors.New("regressão: séries não possuem a mesma quantidade")
+		}
+		n = len(serie.Valores)
+	}
+	serieY, ok := d.Series[y]
+	if !ok {
+		return nil, errors.New("regressão: rótulo de série não encontrado")
+	}
+	if len(serieY.Valores) != n {
+		return nil, errors.New("regressão: séries não possuem a mesma quantidade")
+	}
+	vx := make([][]float64, n)
+	for i := 0; i < n; i++ {
+		linha := make([]float64, len(x)+1)
+		linha[0] = 1
+		for j, k := range x {
+			linha[j+1] = d.Series[k].Valores[i]
+		}
+		vx[i] = linha
+	}
+	X := matriz.New(vx)
+	vy := make([][]float64, n)
+	for i := 0; i < n; i++ {
+		vy[i] = []float64{serieY.Valores[i]}
+	}
+	Y := matriz.New(vy)
+	XT := X.Transposta()
+	XX, err := XT.Multiplica(X)
+	if err != nil {
+		return nil, fmt.Errorf("regressão: %v", err)
+	}
+	XXI, err := XX.Inversa()
+	if err != nil {
+		return nil, fmt.Errorf("regressão: %v", err)
+	}
+	XY, err := XT.Multiplica(Y)
+	if err != nil {
+		return nil, fmt.Errorf("regressão: %v", err)
+	}
+	fmt.Println(XXI)
+	fmt.Println(XY)
+	B, err := XXI.Multiplica(XY)
+	if err != nil {
+		return nil, fmt.Errorf("regressão: %v", err)
+	}
+	fmt.Println(B)
+	v := B.V()
+	l, _ := B.Dim()
+	ret := make([]float64, l)
+	for i := 0; i < l; i++ {
+		ret[i] = v[i][0]
+	}
+	return ret, nil
 }
 
 func (r RegressaoLinear) Prediz(x float64) float64 {
