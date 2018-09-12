@@ -154,6 +154,23 @@ func (d DataFrameFloat64) NewRegressaoLinear(x, y string) (RegressaoLinear, erro
 	return RegressaoLinear{a, b}, nil
 }
 
+func (r RegressaoLinear) Preve(x float64) float64 {
+	return r.A*x + r.B
+}
+
+func (r RegressaoLinear) MAE(valores []float64, observados []float64) (float64, error) {
+	n := len(valores)
+	if n != len(observados) {
+		return 0, fmt.Errorf("número de elementos nos conjuntos de valores e observados diferem")
+	}
+	mae := 0.0
+	for i := 0; i < n; i++ {
+		mae += math.Abs(r.Preve(valores[i]) - observados[i])
+	}
+	mae /= float64(n)
+	return mae, nil
+}
+
 type RegressaoMultipla []float64
 
 func (d DataFrameFloat64) NewRegressaoMultipla(x []string, y string) (RegressaoMultipla, error) {
@@ -203,13 +220,10 @@ func (d DataFrameFloat64) NewRegressaoMultipla(x []string, y string) (RegressaoM
 	if err != nil {
 		return nil, fmt.Errorf("regressão: %v", err)
 	}
-	fmt.Println(XXI)
-	fmt.Println(XY)
 	B, err := XXI.Multiplica(XY)
 	if err != nil {
 		return nil, fmt.Errorf("regressão: %v", err)
 	}
-	fmt.Println(B)
 	v := B.V()
 	l, _ := B.Dim()
 	ret := make([]float64, l)
@@ -219,18 +233,29 @@ func (d DataFrameFloat64) NewRegressaoMultipla(x []string, y string) (RegressaoM
 	return ret, nil
 }
 
-func (r RegressaoLinear) Prediz(x float64) float64 {
-	return r.A*x + r.B
+func (r RegressaoMultipla) Preve(variaveis []float64) (float64, error) {
+	if len(variaveis) != len(r)-1 {
+		return 0, errors.New("regressão: quantidade incorreta de variáveis para previsão")
+	}
+	soma := r[0]
+	for i, x := range variaveis {
+		soma += x * r[i+1]
+	}
+	return soma, nil
 }
 
-func (r RegressaoLinear) MAE(valores []float64, observados []float64) (float64, error) {
+func (r RegressaoMultipla) MAE(valores [][]float64, observados []float64) (float64, error) {
 	n := len(valores)
 	if n != len(observados) {
-		return 0, fmt.Errorf("número de elementos nos conjuntos de valores e observados diferem")
+		return 0, errors.New("regressão: número de elementos nos conjuntos de valores e observados diferem")
 	}
 	mae := 0.0
 	for i := 0; i < n; i++ {
-		mae += math.Abs(r.Prediz(valores[i]) - observados[i])
+		termo, err := r.Preve(valores[i])
+		if err != nil {
+			return 0, err
+		}
+		mae += math.Abs(termo - observados[i])
 	}
 	mae /= float64(n)
 	return mae, nil

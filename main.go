@@ -16,5 +16,18 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(rm)
+	valores := make([][]float64, 0)
+	x1 := df.Series["x1"].Valores
+	x2 := df.Series["x2"].Valores
+	y := df.Series["y"]
+	y.Roda()
+	for i := range x1 {
+		valores = append(valores, []float64{x1[i], x2[i]})
+	}
+	mae, err := rm.MAE(valores, df.Series["y"].Valores)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(mae)
+	fmt.Println(y.DesvioPadrao, y.Media)
 }
