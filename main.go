@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	exemplos.TvRadio()
+	exemplos.PortalAction()
 }
